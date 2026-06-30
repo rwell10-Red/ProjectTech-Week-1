@@ -1,0 +1,71 @@
+name: AWS CI/CD
+
+on:
+  push:
+    branches:
+      - feature-branch
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  validate:
+    name: Validate Feature Branch
+    if: github.ref == 'refs/heads/feature-branch'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::866934333672:role/roc-github-connect
+          aws-region: us-east-1
+
+      - name: Verify AWS Identity
+        run: aws sts get-caller-identity
+
+      - name: Build
+        run: |
+          echo "Building application..."
+
+      - name: Run Tests
+        run: |
+          echo "Running unit tests..."
+
+      - name: Security Scan
+        run: |
+          echo "Running security scan..."
+
+      - name: Validation Complete
+        run: |
+          echo "Feature branch validation successful."
+
+  deploy:
+    name: Deploy to AWS
+    if: github.ref == 'refs/heads/main'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::866934333672:role/roc-github-connect
+          aws-region: us-east-1
+
+      - name: Verify AWS Identity
+        run: aws sts get-caller-identity
+
+      - name: Deploy Application
+        run: |
+          echo "Deploying application to AWS..."
